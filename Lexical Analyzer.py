@@ -6,6 +6,7 @@
 import re
 import tkinter as tk
 from tkinter import scrolledtext
+import numpy as np
 
 
 class Analyzer:
@@ -33,6 +34,8 @@ class Analyzer:
 
         output_lines = ["Tokens:"]
         error_lines = []
+        to_save = []
+
 
         for line_num, lexeme in lexemes:
             if lexeme in keywords:
@@ -53,7 +56,11 @@ class Analyzer:
                 token_type = "UNKNOWN"
                 error_lines.append(f"Line {line_num}: Invalid token '{lexeme}'")
             output_lines.append(f"{lexeme}  →  {token_type} (Line {line_num})")
+            to_save.append([lexeme,token_type,line_num])
 
+        array = np.array(to_save,dtype=object)
+        np.save('Analysis',array)
+        np.savetxt('Analysis_txt', array, fmt="%s", delimiter=" ")
         # Display all output + errors
         final_output = "\n".join(output_lines)
         if error_lines:
