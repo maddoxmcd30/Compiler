@@ -38,25 +38,31 @@ class Analyzer:
 
 
         for line_num, lexeme in lexemes:
-            if lexeme in keywords:
-                token_type = "KEYWORD"
-            elif lexeme in operators:
-                token_type = "OPERATOR"
-            elif lexeme in separators:
-                token_type = "SEPARATOR"
-            elif re.fullmatch(r"\d+", lexeme):
-                token_type = "INT_LITERAL"
-            elif re.fullmatch(r"\d+\.\d+", lexeme):
-                token_type = "FLOAT_LITERAL"
-            elif re.fullmatch(r"\".*?\"|\'.*?\'", lexeme):
-                token_type = "STRING_LITERAL"
-            elif re.fullmatch(r"[a-zA-Z_]\w*", lexeme):
-                token_type = "IDENTIFIER"
+            errors = False
+            if errors:
+                output_lines.append(f"There was an error on Line {line_num}: Invalid token '{lexeme}'")
             else:
-                token_type = "UNKNOWN"
-                error_lines.append(f"Line {line_num}: Invalid token '{lexeme}'")
-            output_lines.append(f"{lexeme}  →  {token_type} (Line {line_num})")
-            to_save.append([lexeme,token_type,line_num])
+
+                if lexeme in keywords:
+                    token_type = "KEYWORD"
+                elif lexeme in operators:
+                    token_type = "OPERATOR"
+                elif lexeme in separators:
+                    token_type = "SEPARATOR"
+                elif re.fullmatch(r"\d+", lexeme):
+                    token_type = "INT_LITERAL"
+                elif re.fullmatch(r"\d+\.\d+", lexeme):
+                    token_type = "FLOAT_LITERAL"
+                elif re.fullmatch(r"\".*?\"|\'.*?\'", lexeme):
+                    token_type = "STRING_LITERAL"
+                elif re.fullmatch(r"[a-zA-Z_]\w*", lexeme):
+                    token_type = "IDENTIFIER"
+                else:
+                    token_type = "UNKNOWN"
+                    error_lines.append(f"Line {line_num}: Invalid token '{lexeme}'")
+
+                output_lines.append(f"{lexeme}  →  {token_type} (Line {line_num})")
+                to_save.append([lexeme,token_type,line_num])
 
         array = np.array(to_save,dtype=object)
         np.save('Analysis',array)
